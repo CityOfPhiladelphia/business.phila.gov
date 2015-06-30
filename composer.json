@@ -2,6 +2,7 @@
   "require": {
     "cityofphiladelphia/business-services-child-theme": "0.1.0",
     "johnpbloch/wordpress": "4.2.2",
+    "private/megaproject": "1.0",
     "private/wp-exporter": "0.0.2",
     "wpackagist-plugin/advanced-custom-fields": "4.4.2",
     "wpackagist-plugin/breadcrumb-navxt": "5.2.2",
