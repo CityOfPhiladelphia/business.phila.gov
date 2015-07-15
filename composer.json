@@ -1,6 +1,6 @@
 {
   "require": {
-    "cityofphiladelphia/business-services-child-theme": "0.3.5",
+    "cityofphiladelphia/business-services-child-theme": "0.3.6",
     "johnpbloch/wordpress": "4.2.2",
     "private/gdlr-shortcode": "1.0",
     "private/masterslider": "2.14.2",
@@ -16,7 +16,7 @@
     "wpackagist-plugin/redux-framework": "3.5.5.1",
     "wpackagist-plugin/search-and-replace": "2.7.1",
     "wpackagist-plugin/simply-show-hooks": "1.1.1",
-    "wpackagist-plugin/reusable-text-blocks": "1.4.8",
+    "wpackagist-plugin/reusable-text-blocks": "1.4.9",
     "wpackagist-plugin/ultimate-wp-query-search-filter": "1.0.10",
     "wpackagist-plugin/wordpress-importer": "0.6.1"
   },
