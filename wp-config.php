@@ -64,9 +64,14 @@ $table_prefix  = 'wp_';
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
  */
-define('WP_DEBUG', getenv('WP_DEBUG') ?: true);
+ //REALLY don't show any errors. 
+ @ini_set( 'log_errors', 'On' );
+ @ini_set( 'display_errors', 'Off' );
+ define( 'WP_DEBUG', false );
+ define( 'WP_DEBUG_LOG', false );
+ define( 'WP_DEBUG_DISPLAY', false );
 
-/** 
+/**
  * Advanced options
  *
  * See http://codex.wordpress.org/Editing_wp-config.php#Advanced_Options
