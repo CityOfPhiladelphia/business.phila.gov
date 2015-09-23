@@ -1,7 +1,7 @@
 {
   "require": {
     "cityofphiladelphia/business-services-child-theme": "0.4.0",
-    "johnpbloch/wordpress": "4.2.4",
+    "johnpbloch/wordpress": "4.3.1",
     "private/gdlr-shortcode": "1.0",
     "private/masterslider": "2.14.2",
     "private/megaproject": "1.0",
