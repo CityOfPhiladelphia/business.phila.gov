@@ -1,10 +1,10 @@
 {
   "require": {
-    "cityofphiladelphia/business-services-child-theme": "0.4.5",
+    "cityofphiladelphia/business-services-child-theme": "1.0.6",
     "johnpbloch/wordpress": "4.3.1",
     "private/gdlr-shortcode": "1.0",
     "private/masterslider": "2.14.2",
-    "private/megaproject": "1.0",
+    "private/megaproject": "1.06",
     "private/wp-exporter": "0.0.2",
     "wpackagist-plugin/advanced-custom-fields": "4.4.3",
     "wpackagist-plugin/amazon-s3-and-cloudfront": "0.9.5",
