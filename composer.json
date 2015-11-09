@@ -8,7 +8,7 @@
     "private/wp-exporter": "0.0.2",
     "wpackagist-plugin/advanced-custom-fields": "4.4.3",
     "wpackagist-plugin/amazon-s3-and-cloudfront": "0.9.5",
-    "wpackagist-plugin/amazon-web-services": "0.3.2",
+    "wpackagist-plugin/amazon-web-services": "0.3.4",
     "wpackagist-plugin/breadcrumb-navxt": "5.2.2",
     "wpackagist-plugin/contact-form-7": "4.3",
     "wpackagist-plugin/google-calendar-events": "2.3.2",
