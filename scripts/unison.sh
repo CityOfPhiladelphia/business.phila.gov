@@ -3,7 +3,7 @@
 # Script for installing Unison (http://www.cis.upenn.edu/~bcpierce/unison/)
 
 export DEBIAN_FRONTEND=noninteractive
-sudo apt-get install -y exuberant-ctags make
+sudo apt-get install -y exuberant-ctags gcc make
 
 unison_version="unison-2.48.3"
 ocaml_version="ocaml-4.02.3"
@@ -23,4 +23,3 @@ tar xzf $unison_version.tar.gz
 cd $unison_version
 make -s
 sudo cp -v unison /usr/local/bin/
-cd -
