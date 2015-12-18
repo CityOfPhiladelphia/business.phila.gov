@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 export DEBIAN_FRONTEND=noninteractive
 sudo -E apt-get install -y mysql-server-5.6
 
