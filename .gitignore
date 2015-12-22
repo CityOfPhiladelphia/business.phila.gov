@@ -1,3 +1,4 @@
 .env
 wp/wp-config.php
 wp/wp-content/uploads
+wp/wp-content/themes/megaproject
