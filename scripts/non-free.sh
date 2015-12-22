@@ -3,7 +3,7 @@
 # Install non-free plugins and themes
 
 _dir="$(dirname "$0")"
-plugins="gdlr-shortcode-1.0.zip masterslider-2.14.2.zip"
+plugins="gdlr-shortcode-1.0.zip masterslider-2.20.4.zip"
 themes="megaproject-1.06.zip"
 
 for plugin in $plugins; do
