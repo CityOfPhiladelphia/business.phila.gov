@@ -7,8 +7,8 @@ _dir="$(dirname "$0")"
 
 source "$_dir/lib/mo"
 
-echo 'Installing private plugins'
-"$_dir/private-plugins.sh"
+echo 'Installing non-free plugins and themes'
+"$_dir/non-free.sh"
 
 echo 'Modifying php.ini'
 sudo ed -s /etc/php5/fpm/php.ini <<'EOF'
