@@ -7,7 +7,7 @@ Author: Hal Gatewood
 Author URI: http://www.halgatewood.com
 Text Domain: text-blocks
 Domain Path: /languages
-Version: 1.4.9
+Version: 1.4.10
 */
 
 /*
@@ -263,7 +263,7 @@ function show_text_block($id, $plain = false, $atts = false)
 	if(!is_numeric($id))
 	{
 		$page = get_page_by_path( $id, null, 'text-blocks' );
-		$id = $page->ID;
+		$id = apply_filters( 'wpml_object_id', $page->ID, 'text-blocks' );
 	}
 
 	if( !$id ) return false;

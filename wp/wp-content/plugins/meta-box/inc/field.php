@@ -34,10 +34,11 @@ if ( ! class_exists( 'RWMB_Field ' ) )
 		 */
 		static function show( $field, $saved )
 		{
-			global $post;
+			$post    = get_post();
+			$post_id = isset( $post->ID ) ? $post->ID : 0;
 
 			$field_class = RW_Meta_Box::get_class_name( $field );
-			$meta        = call_user_func( array( $field_class, 'meta' ), $post->ID, $saved, $field );
+			$meta        = call_user_func( array( $field_class, 'meta' ), $post_id, $saved, $field );
 
 			// Apply filter to field meta value
 			// 1st filter applies to all fields
@@ -69,7 +70,7 @@ if ( ! class_exists( 'RWMB_Field ' ) )
 
 				/**
 				 * Note: $meta must contain value so that the foreach loop runs!
-				 * @see self::meta()
+				 * @see meta()
 				 */
 				foreach ( $meta as $index => $sub_meta )
 				{
@@ -85,7 +86,12 @@ if ( ! class_exists( 'RWMB_Field ' ) )
 						$sub_field['field_name'] .= '[]';
 
 					// Wrap field HTML in a div with class="rwmb-clone" if needed
-					$input_html = '<div class="rwmb-clone">';
+					$class = "rwmb-clone rwmb-{$field['type']}-clone";
+					if ( $field['sort_clone'] )
+					{
+						$class .= ' rwmb-sort-clone';
+					}
+					$input_html = "<div class='$class'>";
 
 					// Drag clone icon
 					if ( $field['sort_clone'] )
@@ -241,7 +247,7 @@ if ( ! class_exists( 'RWMB_Field ' ) )
 		 */
 		static function add_clone_button( $field )
 		{
-			$text = apply_filters( 'rwmb_add_clone_button_text', __( '+', 'meta-box' ), $field );
+			$text = apply_filters( 'rwmb_add_clone_button_text', __( '+ Add more', 'meta-box' ), $field );
 			return "<a href='#' class='rwmb-button button-primary add-clone'>$text</a>";
 		}
 
@@ -254,8 +260,9 @@ if ( ! class_exists( 'RWMB_Field ' ) )
 		 */
 		static function remove_clone_button( $field )
 		{
-			$text = apply_filters( 'rwmb_remove_clone_button_text', __( '&#8211;', 'meta-box' ), $field );
-			return "<a href='#' class='rwmb-button button remove-clone'>$text</a>";
+			$icon = '<i class="dashicons dashicons-minus"></i>';
+			$text = apply_filters( 'rwmb_remove_clone_button_text', $icon, $field );
+			return "<a href='#' class='rwmb-button remove-clone'>$text</a>";
 		}
 
 		/**
@@ -391,7 +398,46 @@ if ( ! class_exists( 'RWMB_Field ' ) )
 		 */
 		static function normalize_field( $field )
 		{
+			$field = wp_parse_args( $field, array(
+				'disabled'   => false,
+				'required'   => false,
+				'attributes' => array()
+			) );
+
+			$field['attributes'] = wp_parse_args( $field['attributes'], array(
+				'disabled' => $field['disabled'],
+				'required' => $field['required'],
+				'class'    => "rwmb-{$field['type']}",
+				'id'       => $field['clone'] ? false : $field['id'],
+				'name'     => $field['field_name'],
+			) );
+
 			return $field;
+		}
+
+		/**
+		 * Renders an attribute array into an html attributes string
+		 *
+		 * @param array $attributes
+		 *
+		 * @return string
+		 */
+		static function render_attributes( $attributes )
+		{
+			$attr_string = '';
+			foreach ( $attributes as $key => $value )
+			{
+				if ( $value )
+				{
+					$value = ( true === $value ) ? $key : $value;
+					$attr_string .= sprintf(
+						' %s="%s"',
+						$key,
+						esc_attr( $value )
+					);
+				}
+			}
+			return $attr_string;
 		}
 
 		/**
