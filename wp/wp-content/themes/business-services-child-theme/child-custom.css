@@ -800,7 +800,7 @@ span.upagicurrent {
   height: 0;
   width: 0;
 }
-.accordion-content ul li.simcal-event, .content-wrapper ul li.simcal-event{
+.accordion-content ul li.simcal-event, .content-wrapper ul li.simcal-event, .simcal-calendar .accordion-content ul, .simcal-calendar .content-wrapper ul{
   padding:0;
   margin:0;
 }
