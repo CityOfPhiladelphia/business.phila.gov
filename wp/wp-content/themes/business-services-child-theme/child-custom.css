@@ -793,6 +793,17 @@ span.upagicurrent {
 .upagievent.inactive {
   opacity: 1;
 }
+/* = simcal overrides
+-------------------------------------------------------------- */
+.accordion-content ul li.simcal-event:before, .content-wrapper ul li.simcal-event:before {
+  content: '';
+  height: 0;
+  width: 0;
+}
+.accordion-content ul li.simcal-event, .content-wrapper ul li.simcal-event{
+  padding:0;
+  margin:0;
+}
 /* GOOGLE Translate -------------------------------------------------- */
 #google_translate_element {
   display: inline-block !important;
@@ -822,6 +833,7 @@ span.upagicurrent {
 #google_translate_element .goog-te-menu-value:hover {
 color:#71BCD7 !important;
 }
+
 
 .header-block-area-wrapper {
   width: auto;
