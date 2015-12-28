@@ -808,6 +808,13 @@ span.upagicurrent {
 .simcal-event-details p{
   margin-bottom: 0;
 }
+
+.simcal-calendar-head h3{
+  color: #fff;
+}
+.qtip-fixed {
+  top:120px !important;
+}
 /* GOOGLE Translate -------------------------------------------------- */
 #google_translate_element {
   display: inline-block !important;
