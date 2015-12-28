@@ -804,6 +804,9 @@ span.upagicurrent {
   padding:0;
   margin:0;
 }
+.simcal-event-details p{
+  margin-bottom: 0;
+}
 /* GOOGLE Translate -------------------------------------------------- */
 #google_translate_element {
   display: inline-block !important;
