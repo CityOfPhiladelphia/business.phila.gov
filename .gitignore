@@ -1,4 +1,5 @@
 .env
+wp/readme.*
 wp/wp-config.php
 wp/xmlrpc.php
 wp/wp-content/uploads
