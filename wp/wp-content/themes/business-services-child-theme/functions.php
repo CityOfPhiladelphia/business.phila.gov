@@ -136,10 +136,10 @@ add_action( 'after_setup_theme', 'remove_parent_features', 11 );
 /*	Remove tags
 /*-----------------------------------------------------------------------------------*/
 
-function unregister_taxonomy(){
+function phila_unregister_taxonomy(){
     register_taxonomy('post_tag', array());
 }
-add_action('init', 'unregister_taxonomy');
+add_action('init', 'phila_unregister_taxonomy');
 
 /*-----------------------------------------------------------------------------------*/
 /*	enqueue styles/scripts
