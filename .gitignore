@@ -1,5 +1,6 @@
 .env
 wp/wp-config.php
+wp/xmlrpc.php
 wp/wp-content/uploads
 wp/wp-content/themes/megaproject
 wp/wp-content/plugins/gdlr-shortcode
