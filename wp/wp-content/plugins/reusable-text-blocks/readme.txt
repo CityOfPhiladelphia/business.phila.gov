@@ -1,7 +1,7 @@
 === Reusable Text Blocks ===
 Contributors: halgatewood
 Donate link: https://halgatewood.com/donate/
-Tags: content, block, reusable content, reusable text, widget, shortcode
+Tags: content, block, reusable content, reusable text, widget, shortcode, dry, text blocks, content blocks
 Requires at least: 3.5
 Tested up to: 4.4
 Stable tag: trunk
@@ -12,22 +12,26 @@ Create reusable pieces of content that you can insert into themes, posts, pages 
 
 == Description ==
 
-This plugin creates a new 'text-blocks' custom post type with it's own section in the WordPress admin sidebar. It uses the standard WordPress user interface so you and your clients will know how to use it instantly.
+This plugin creates a new 'text-blocks' custom post type with it's own section in the WordPress admin sidebar. It uses the standard WordPress user interface so you and your clients will know how to use it instantly. 
+
+>New in Version 1.5: Variables! You can add {{player}} to your text block content and then pass in 'player' to the shortcode: [text-blocks id="1" player="Hal Gatewood"]
+
 
 You can add it to your site in three ways:
 
-Widget: Included widget allows you to specify which block you want to insert. You can also include a title if needed.
+= 1. Widget =
+The included widget allows you to specify which block you want to insert. You can also include a title if needed.
 
-Shortcode:
+= 2. Widget =
 `[text-blocks id="1"] or [text-blocks id="text_block_slug"]`
 
-PHP Function: A PHP function has been setup so you do not have to use the do_shortcode function. Go straight to the source with the following.
+= 3. PHP Function =
+A PHP function has been setup so you do not have to use the do_shortcode function.
 
 `<?php if(function_exists('show_text_block')) { echo show_text_block(421); } ?>`
-
-or
-
 `<?php if(function_exists('show_text_block')) { echo show_text_block('slug'); } ?>`
+
+
 
 
 == Installation ==
@@ -38,19 +42,16 @@ or
 
 You can add it to your site in three ways:
 
-Widget: Included widget allows you to specify with block and insert a title if needed.
+= 1. Widget =
+The included widget allows you to specify which block you want to insert. You can also include a title if needed.
 
-Shortcode:
+= 2. Widget =
 `[text-blocks id="1"] or [text-blocks id="text_block_slug"]`
 
-`[text-blocks id="1" plain=1] or [text-blocks id="text_block_slug" plain=1]`
-
-PHP Function: A PHP function has been setup so you do not have to use the do_shortcode function. Go straight to the source with the following.
+= 3. PHP Function =
+A PHP function has been setup so you do not have to use the do_shortcode function.
 
 `<?php if(function_exists('show_text_block')) { echo show_text_block(421); } ?>`
-
-or
-
 `<?php if(function_exists('show_text_block')) { echo show_text_block('slug'); } ?>`
 
 
@@ -63,6 +64,15 @@ or
 5. Create custom templates
 
 == Changelog ==
+
+= 1.5.1 =
+* Fixed no attribute error
+
+= 1.5 =
+* Fixed PHP 7 Warnings
+* Added slug="" parameter when added from Add Block button (helps you know which shortcode block is which)
+* Text Blocks will only show if Published
+* Variables. You can add {{player}} to your text block and then pass in 'player' to the shortcode: [text-blocks id="1" player="Hal Gatewood"]
 
 = 1.4.10 =
 * Added filter wpml_object_id

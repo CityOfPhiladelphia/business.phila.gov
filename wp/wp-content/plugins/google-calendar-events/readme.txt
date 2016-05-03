@@ -1,9 +1,9 @@
 === Simple Calendar - Google Calendar Plugin ===
 Contributors: moonstonemedia, pderksen, nickyoung87, nekojira, rosshanney
 Tags: calendar, calendars, calendar manager, custom calendar, custom calendars, event, events, events feed, google calendar, google
-Requires at least: 4.0
-Tested up to: 4.4
-Stable tag: 3.0.10
+Requires at least: 4.1
+Tested up to: 4.5
+Stable tag: 3.0.16
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,6 +48,8 @@ Add Google Calendar events to your WordPress site in minutes. Beautiful calendar
 
 [Plugin installation instructions](http://docs.simplecalendar.io/simple-calendar-installation/?utm_source=wordpress.org&utm_medium=link&utm_campaign=simple-cal-readme&utm_content=installation)
 
+[Setup guide from WP Beginner](http://www.wpbeginner.com/plugins/how-to-add-google-calendar-in-wordpress/) (updated 2/1/2016)
+
 == Frequently Asked Questions ==
 
 = Where's your plugin documentation? =
@@ -79,6 +81,70 @@ We'd love your help! Here's a few things you can do:
 8. Attach a calendar to a post or page
 
 == Changelog ==
+
+= 3.0.16 - March 30, 2016 =
+
+* Fix: Multiple events at the same time on a grouped calendar should now show correctly.
+* Fix: PHP notice when adding a new calendar should no longer appear.
+* Fix: Issues with Carbon fatal error should not happen.
+
+= 3.0.15 - March 19, 2016 =
+
+* Fix: Timezone issues with event source option should now work correctly.
+* Fix: Tooltips should no longer be empty after a resize.
+* Tweak: Removed event source option for grouped calendars.
+* Tweak: Allow other plugin or theme shortcodes to be used in the event template.
+* Dev: Removed Browser.php from composer so we can use it standalone with customizations.
+* Dev: Constructor for Browser.php now compatible with future versions of PHP.
+* Dev: Removed PHP 5.2 compatibility code.
+
+= 3.0.14 - February 10, 2016 =
+
+* Fix: Updated schema to pass W3C validation. Props [@martinburchell](https://github.com/martinburchell)
+* Fix: Search queries using quotes should now work as expected. Props [@justdave](https://github.com/justdave)
+* Fix: Better character encoding for small screen mode characters. Props [@witchdoktor](https://github.com/witchdoktor)
+* Fix: Events that start at 12 A.M. will now display correctly. Props [@TaylorHawkes](https://github.com/TaylorHawkes)
+* Fix: Corrected PHP error when removing first recurring event. Props [@petersonca](https://github.com/petersonca)
+* Fix: Max number of events should no longer refresh to 2500 on change.
+* Fix: Default cache interval should now display correctly.
+* Fix: Custom date should now show correct month when set to the first of a month.
+* Fix: Visual editor is available again when editing event template tags.
+* Tweak: Updated default event template tags formatting.
+* Tweak: Added an edit calendar link.
+* Tweak: Updated how the timezone is handled for calendars. Also fixes an issue with imported calendars.
+* Dev: Corrected PHP notice showing in media gallery grid view. Props [@Daronspence](https://github.com/Daronspence)
+* Dev: Added filters to give control over the grid view paging columns. Props [@thoronas](https://github.com/thoronas)
+* Dev: Updated imagesloaded library to 4.1.0.
+
+= 3.0.13 - January 25, 2016 =
+
+* Tweak: Lists that start on a custom date will start at the beginning of the day now.
+* Tweak: Make it so grouped calendars are properly sorted by event time.
+* Tweak: Updated option for controlling multi-day events.
+* Tweak: Allow line breaks from Google calendar description to persist if not using the html attribute.
+* Tweak: Updated text output for human date times.
+* Fix: Multi-day events that span over to the first day of the month should now show correctly.
+* Feature: Added dropdown option on how to handle line breaks and paragraphs for the event template tags.
+* Dev: Removed WP Requirements from Composer.
+* Dev: Removed always enqueue and disable scripts options so scripts will load automatically on every page.
+
+= 3.0.12 - January 5, 2016 =
+
+* Fix: All-day events on the first day of the month will now show up correctly.
+* Fix: Calendar start dates using a variable number will now start on the correct date.
+* Fix: Disable scripts and disable styles advanced options should now work as intended.
+* Tweak: Added "before" and "after" text for human date event builder codes.
+* Dev: Added jquery.qtip.min.map file to vendor assets.
+
+= 3.0.11 - December 31, 2015 =
+
+* Fix: Custom date and time format settings should no longer override everything else when not selected.
+* Fix: Limiting description with HTML tags should now work better.
+* Fix: Events from different calendars not showing on a grouped calendar should display properly now.
+* Fix: Grouped calendars will now clear the cache of all attached calendars.
+* Fix: Cache was requiring a manual clear sometimes and should now work automatically.
+* Dev: Updated CSS class for [start-location] and [end-location] tags.
+* Tweak: Updated date and time preview to show properly escaped values.
 
 = 3.0.10 - December 21, 2015 =
 
