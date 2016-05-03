@@ -7,7 +7,7 @@ Author: Hal Gatewood
 Author URI: http://www.halgatewood.com
 Text Domain: text-blocks
 Domain Path: /languages
-Version: 1.4.10
+Version: 1.5.1
 */
 
 /*
@@ -187,7 +187,7 @@ function text_blocks_shortcode_metabox()
 // TEXT BLOCK WIDGET
 class TextBlocksWidget extends WP_Widget
 {
-	function TextBlocksWidget() { parent::__construct(false, $name = 'Text Blocks Widget'); }
+	function __construct() { parent::__construct(false, $name = 'Text Blocks Widget'); }
 
     function widget($args, $instance)
     {
@@ -267,7 +267,7 @@ function show_text_block($id, $plain = false, $atts = false)
 	}
 
 	if( !$id ) return false;
-	
+	if ( get_post_status( $id ) != 'publish' ) return false;
 	
 	// LOOK FOR TEMPLATE IN THEME
 	$template = isset($atts['template']) ? $atts['template'] : $id;
@@ -278,6 +278,7 @@ function show_text_block($id, $plain = false, $atts = false)
 	if( $template )
 	{
 		$content = get_post_field( 'post_content', $id );
+		if( !isset($atts['stop_detect'])) $content = text_blocks_att_swap( $content, $atts );
 		
 		ob_start();
 		include( $template );
@@ -287,15 +288,18 @@ function show_text_block($id, $plain = false, $atts = false)
 	}
 
 	// LOAD PLAIN CONTENT
-	if($plain)
+	if( $plain )
 	{
-		return apply_filters( 'text_blocks_shortcode_html', get_post_field( 'post_content', $id ), $atts );
+		$content = get_post_field( 'post_content', $id );
+		if( !isset($atts['stop_detect'])) $content = text_blocks_att_swap( $content, $atts );
+		return apply_filters( 'text_blocks_shortcode_html', $content, $atts );
 	}
 
 
 	// APPLY 'the_content' FILTER TO BLEND WITH EVERYTHING ELSE
 	$content = apply_filters( 'the_content', get_post_field( 'post_content', $id), $atts );
-	return apply_filters( 'text_blocks_shortcode_html', $content, $atts, $id );
+	if( !isset($atts['stop_detect'])) $content = text_blocks_att_swap( $content, $atts );
+	return apply_filters( 'text_blocks_shortcode_html', $content, $atts, $id );	
 }
 
 
@@ -306,6 +310,26 @@ function text_blocks_shortcode($atts)
 	$plain = isset($atts['plain']) ? 1 : 0;
 	if($id) { return show_text_block( $id, $plain, $atts ); }
 	else { return false; }
+}
+
+
+// DETECT ATTS FUNCTION
+function text_blocks_att_swap( $content, $atts )
+{
+	if( !is_array($atts) ) $atts = (array) $atts;
+	
+	$dont_detect = apply_filters('text_blocks_dont_detect_words', array('template', 'id', 'detect') );
+	
+	$replace_front 	= apply_filters('text_blocks_replace_front', '{{');
+	$replace_back 	= apply_filters('text_blocks_replace_back', '}}');
+
+	foreach( $atts as $slug => $att )
+	{
+		if( in_array($att, $dont_detect) ) continue;
+		$content = str_replace($replace_front . $slug . $replace_back, $atts[$slug], $content);
+	}
+	
+	return $content;
 }
 
 
@@ -339,7 +363,11 @@ function text_blocks_admin_footer_for_thickbox()
                     alert('<?php _e( "You must choose a block", "text-blocks" ); ?>');
                     return;
                 }
-                window.send_to_editor('[text-blocks id="' + id + '"]');
+                
+                
+                var slug = jQuery('#text-blocks-select-box option:selected').data('slug');
+                
+                window.send_to_editor('[text-blocks id="' + id + '" slug="' + slug + '"]');
             }
 		</script>
 
@@ -355,7 +383,7 @@ function text_blocks_admin_footer_for_thickbox()
 						<?php
 							foreach ( $blocks as $block ) 
 							{
-								echo '<option value="' . $block->ID . '">' . $block->post_title . '</option>';
+								echo '<option value="' . $block->ID . '" data-slug="' . $block->post_name . '">' . $block->post_title . '</option>';
 							}
 						?>
 					</select>
