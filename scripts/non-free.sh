@@ -9,4 +9,4 @@ for plugin in $plugins; do
   wp plugin install --quiet --force --activate "$("$_dir/s3url.sh" "$PLUGIN_BUCKET" "$plugin")"
 done
 
-wp theme install --quiet --force "$("$_dir/s3url.sh" "$PLUGIN_BUCKET" megaproject-1.07.zip)"
+wp theme install --quiet --force "$("$_dir/s3url.sh" "$PLUGIN_BUCKET" megaproject-1.08.zip)"
