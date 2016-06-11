@@ -5,7 +5,7 @@
 export DEBIAN_FRONTEND=noninteractive
 sudo apt-get install -y exuberant-ctags gcc make
 
-unison_version="unison-2.48.3"
+unison_version="unison-2.48.4"
 ocaml_version="ocaml-4.02.3"
 
 cd /tmp
