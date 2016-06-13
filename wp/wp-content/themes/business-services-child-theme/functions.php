@@ -372,3 +372,12 @@ add_shortcode( 'feedback-link', 'feedback_link' );
 /*	Remove bogus xml-rpc from header
 /*-----------------------------------------------------------------------------------*/
 add_filter('xmlrpc_enabled', '__return_false');
+
+/*-----------------------------------------------------------------------------------*/
+/*	Remove version from meta
+/*-----------------------------------------------------------------------------------*/
+//Original source - https://wordpress.org/support/topic/remove-ltmeta-namegenerator-contentwordpress-25-gt#post-920568
+function business_remove_version() {
+return '';
+}
+add_filter('the_generator', 'business_remove_version');
