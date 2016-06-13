@@ -376,7 +376,7 @@ add_filter('xmlrpc_enabled', '__return_false');
 /*-----------------------------------------------------------------------------------*/
 /*	Remove version from meta
 /*-----------------------------------------------------------------------------------*/
-
+//Original source - https://wordpress.org/support/topic/remove-ltmeta-namegenerator-contentwordpress-25-gt#post-920568
 function business_remove_version() {
 return '';
 }
