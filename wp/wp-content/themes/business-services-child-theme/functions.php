@@ -372,3 +372,12 @@ add_shortcode( 'feedback-link', 'feedback_link' );
 /*	Remove bogus xml-rpc from header
 /*-----------------------------------------------------------------------------------*/
 add_filter('xmlrpc_enabled', '__return_false');
+
+/*-----------------------------------------------------------------------------------*/
+/*	Remove version from meta
+/*-----------------------------------------------------------------------------------*/
+
+function business_remove_version() {
+return '';
+}
+add_filter('the_generator', 'business_remove_version');
