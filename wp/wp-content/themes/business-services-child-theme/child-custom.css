@@ -38,6 +38,12 @@ body {
   font-weight: 600;
   font-size: 13px;
 }
+.home .simcal-default-calendar-list ul.simcal-events {
+  margin:0;
+}
+.home .simcal-default-calendar-list ul.simcal-events li.simcal-event {
+  margin-bottom: 0;
+}
 .gce-list-event, .gce-tooltip-event {
   background-color: transparent !important;
   padding: 0 !important;
