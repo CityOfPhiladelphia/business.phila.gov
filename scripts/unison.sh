@@ -19,7 +19,8 @@ sudo make -s install
 cd -
 
 wget http://www.seas.upenn.edu/~bcpierce/unison/download/releases/stable/$unison_version.tar.gz
-tar xzf $unison_version.tar.gz
-cd $unison_version
+mkdir $unison_version
+tar xzf $unison_version.tar.gz -C $unison_version
+cd $unison_version/src
 make -s
 sudo cp -v unison /usr/local/bin/
