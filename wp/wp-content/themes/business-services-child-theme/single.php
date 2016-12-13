@@ -9,7 +9,8 @@
 	if ( $online != '' ) : ?>
 		<div class="pdf-download three">
 		<a href="<?php echo business_util_return_online_license_link() ?>" class="button blue full">
-			<i class="fa fa-refresh fa-inverse"></i><span>
+			<i class="fa <?php echo ($online === 'apply') ? 'fa-arrow-circle-right' :
+			 'fa-refresh' ?> fa-inverse"></i><span>
 				<?php
 				switch ( $online ) {
 					case 'apply':
