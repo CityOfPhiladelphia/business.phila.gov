@@ -214,7 +214,8 @@ function business_register_meta_boxes( $meta_boxes )
               'name' => 'Apply or renew online',
               'desc'  => 'Can this license be renewed, applied for, or both through eClipse?',
               'id'  => $prefix . 'online',
-              'type'  => 'radio',
+              'type'  => 'select',
+              'placeholder' => 'Please select...',
               'options' => array(
                 'apply' => 'Apply only',
                 'renew' => 'Renew only',
@@ -387,3 +388,8 @@ function business_remove_version() {
 return '';
 }
 add_filter('the_generator', 'business_remove_version');
+
+/* Returns the eclipse link, made as a function in case this insane URL ever changes */
+function business_util_return_online_license_link(){
+  return 'https://eclipse.phila.gov/phillylmsprod/pub/lms/Login.aspx';
+}
