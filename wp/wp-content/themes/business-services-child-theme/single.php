@@ -4,34 +4,34 @@
 <?php
 //this lets us use the space provided by the button, without actually rendering it.
 	$pdf =  rwmb_meta( 'business_pdf' );
-  $online = rwmb_meta( 'business_online' );
+	$online = rwmb_meta( 'business_online' );
 
-  if ( $online != '' ) : ?>
+	if ( $online != '' ) : ?>
 		<div class="pdf-download three">
 		<a href="<?php business_util_return_online_license_link() ?>" class="button blue full">
-			 <i class="fa fa-refresh fa-inverse"></i><span>
-        <?php
-        switch ( $online ) {
-          case 'apply':
-            echo ' Apply online';
-            break;
-          case 'renew':
-            echo 'Renew online';
-            break;
-          case 'both':
-            echo 'Apply and renew online';
-            break;
-         } ?>
-         </span></a>
+			<i class="fa fa-refresh fa-inverse"></i><span>
+				<?php
+				switch ( $online ) {
+					case 'apply':
+						echo ' Apply online';
+						break;
+					case 'renew':
+						echo 'Renew online';
+						break;
+					case 'both':
+						echo 'Apply and renew online';
+						break;
+				} ?>
+				</span></a>
 			</div>
-	    <div class="clear"></div>
-  <?php elseif ( $pdf != '' ) : ?>
-    <div class="pdf-download two">
-      <a href="<?php echo $pdf ?>" class="button red full">
-       <i class="fa fa-download fa-inverse"></i><span>Apply Now</span></a>
-    </div>
-    <div class="clear"></div>
-  <?php endif; ?>
+			<div class="clear"></div>
+	<?php elseif ( $pdf != '' ) : ?>
+		<div class="pdf-download two">
+			<a href="<?php echo $pdf ?>" class="button red full">
+			 <i class="fa fa-download fa-inverse"></i><span>Apply Now</span></a>
+		</div>
+		<div class="clear"></div>
+	<?php endif; ?>
 <?php global $gdlr_sidebar, $theme_option;
 		if( empty($gdlr_post_option['sidebar']) || $gdlr_post_option['sidebar'] == 'default-sidebar' ){
 			$gdlr_sidebar = array(

@@ -5,6 +5,13 @@ echo 'Writing wp-config.php'
 # Don't let any existing configs get in the way
 rm -f wp-config.php wp/wp-config.php
 
+if [ "$PHILA_TEST" ]; then
+  read -r -d '' DEBUG <<EOF
+/* Debug true on test instances */
+define('WP_DEBUG', true);
+EOF
+fi
+
 # DOMAIN is INSTANCE_HOSTNAME unless PUBLIC_HOSTNAME is set
 DOMAIN=${PUBLIC_HOSTNAME:-"$INSTANCE_HOSTNAME"}
 
