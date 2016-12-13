@@ -1,5 +1,66 @@
 # Redux Framework Changelog
 
+## 3.7
+* WP.org release
+
+## 3.6.2.3
+* Modified: Change customizer hover styles to match WP 4.7.
+
+## 3.6.2.2
+* Modified: #3169 - print_r of wpdb queries in dev_mode removed.
+
+## 3.6.2.1
+* Fixed: #3159 - Support for SVG in gallery media selection.
+* Fixed: #3158 - PHP warning for _validate_values function when extensions installed on PHP7.
+
+## 3.6.2
+* WP.org release and cleanup
+
+## 3.6.1.3
+* Fixed:   #3105 - link_color output failing due to PHP error.
+
+## 3.6.1.2
+* Fixed:   #3103 - WP 4.6 forces new default date format, breaking date validation.
+
+## 3.6.1.1
+* Fixed:   Typography subsets error due to typo.
+
+## 3.6.1 - WP.org release
+
+## 3.6.0.11
+* Removed:  Empty PHP file from editor field.
+* Modified: Replaced class primary function name in browser.php to __construct for PHP7 compatibility.
+
+## 3.6.0.10
+* Fixed:    #3051 - Color_RBGA field RGBA value outputting zeros when color is left blank.
+
+## 3.6.0.9
+* Fixed:    #3048 - Subsection tabs not including specified section class name.
+
+## 3.6.0.8
+* Fixed:    Incorrect string comparison result in admin link check.  Thanks @ksere.
+* Fixed:    Check value exists before validating when used with Metabox extension.  Thanks @Enchiridion
+
+
+## 3.6.0.7
+* Fixed:    Empty values not passing to validation_callback.
+
+
+## 3.6.0.6
+* Fixed:    Javascript error in customizer javascript, preventing save of changed options.
+* Fixed:    #3019 - Section descriptions incorrect when opt_name contains digits.
+
+## 3.6.0.5
+* Reverted: Changes to typography.  The on input variable solution was not working.
+* Fixed:    Support URL has generator was failing with an error.
+
+## 3.6.0.4
+* Changed:  Typography field is now only ONE input variable. Should reduce our 
+            max_input_vars errors dramatically.
+
+## 3.6.0.3
+* Fixed:    Some XSS vulnerabilities only available in the backend when authenticated as a user.
+
 ## 3.6.0.2
 * Fixed:    Customizer.min.js compression issue. Deploy.
 
