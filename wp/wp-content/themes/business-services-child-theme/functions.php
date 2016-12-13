@@ -198,23 +198,29 @@ function business_register_meta_boxes( $meta_boxes )
     // 1st meta box
     $meta_boxes[] = array(
         'id'       => 'files',
-        'title'    => 'PDF and Online Service Locations',
+        'title'    => 'PDF and online service locations',
         'pages'    => array( 'post' ),
         'context'  => 'normal',
         'priority' => 'high',
 
         'fields' => array(
             array(
-                'name'  => 'Associated PDF',
-                'desc'  => 'Choose a PDF from the media library or upload a new one.',
-                'id'    => $prefix . 'pdf',
-                'type'  => 'file_input'
+              'name'  => 'Associated PDF',
+              'desc'  => 'Choose a PDF from the media library or upload a new one.',
+              'id'    => $prefix . 'pdf',
+              'type'  => 'file_input'
             ),
             array(
-                'name'  => 'Renewable Online?',
-                'desc'  => 'If this license or permit can be renewed through eClipse, check this box.',
-                'id'    => $prefix . 'link',
-                'type'  => 'checkbox'
+              'name' => 'Apply or renew online',
+              'desc'  => 'Can this license be renewed, applied for, or both through eClipse?',
+              'id'  => $prefix . 'online',
+              'type'  => 'radio',
+              'options' => array(
+                'apply' => 'Apply only',
+                'renew' => 'Renew only',
+                'both'  => 'Apply and renew online',
+                ),
+              'inline'  => false,
             ),
         )
     );
