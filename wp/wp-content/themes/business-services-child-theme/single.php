@@ -33,7 +33,7 @@
 		</div>
 		<div class="clear"></div>
 	<?php else :?>
-		<div class="marg-top-20"></div>
+		<div class="marg-top-50"></div>
 	<?php endif; ?>
 <?php global $gdlr_sidebar, $theme_option;
 		if( empty($gdlr_post_option['sidebar']) || $gdlr_post_option['sidebar'] == 'default-sidebar' ){
