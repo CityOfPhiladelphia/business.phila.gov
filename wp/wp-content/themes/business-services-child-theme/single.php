@@ -9,7 +9,8 @@
 	if ( $online != '' ) : ?>
 		<div class="pdf-download three">
 		<a href="<?php echo business_util_return_online_license_link() ?>" class="button blue full">
-			<i class="fa fa-refresh fa-inverse"></i><span>
+			<i class="fa <?php echo ($online === 'apply') ? 'fa-long-arrow-right' :
+			 'fa-refresh' ?> fa-inverse"></i><span>
 				<?php
 				switch ( $online ) {
 					case 'apply':
@@ -32,7 +33,7 @@
 		</div>
 		<div class="clear"></div>
 	<?php else :?>
-		<div class="marg-top-20"></div>
+		<div class="marg-top-50"></div>
 	<?php endif; ?>
 <?php global $gdlr_sidebar, $theme_option;
 		if( empty($gdlr_post_option['sidebar']) || $gdlr_post_option['sidebar'] == 'default-sidebar' ){
