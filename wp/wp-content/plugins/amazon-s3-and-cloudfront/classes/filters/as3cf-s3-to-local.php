@@ -12,15 +12,31 @@ class AS3CF_S3_To_Local extends AS3CF_Filter {
 		add_filter( 'pre_set_theme_mod_background_image', array( $this, 'filter_customizer_image' ), 10, 2 );
 		add_filter( 'pre_set_theme_mod_header_image', array( $this, 'filter_customizer_image' ), 10, 2 );
 		add_filter( 'pre_set_theme_mod_header_image_data', array( $this, 'filter_header_image_data' ), 10, 2 );
+		add_filter( 'update_custom_css_data', array( $this, 'filter_update_custom_css_data' ), 10, 2 );
 		// Posts
 		add_filter( 'content_save_pre', array( $this, 'filter_post' ) );
 		add_filter( 'excerpt_save_pre', array( $this, 'filter_post' ) );
+		add_filter( 'as3cf_filter_post_s3_to_local', array( $this, 'filter_post' ) );
 		// Widgets
-		add_filter( 'widget_update_callback', array( $this, 'filter_widget_update' ), 10, 4 );
+		add_filter( 'widget_update_callback', array( $this, 'filter_widget_save' ), 10, 4 );
 	}
 
 	/**
-	 * Filter widget update.
+	 * Filter update custom CSS data.
+	 *
+	 * @param array $data
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public function filter_update_custom_css_data( $data, $args ) {
+		$data['css'] = $this->filter_custom_css( $data['css'], $args['stylesheet'] );
+
+		return $data;
+	}
+
+	/**
+	 * Filter widget on save.
 	 *
 	 * @param array     $instance
 	 * @param array     $new_instance
@@ -30,18 +46,17 @@ class AS3CF_S3_To_Local extends AS3CF_Filter {
 	 * @return array
 	 *
 	 */
-	public function filter_widget_update( $instance, $new_instance, $old_instance, $class ) {
-		if ( ! is_a( $class, 'WP_Widget_Text' ) || empty( $instance ) ) {
-			return $instance;
-		}
+	public function filter_widget_save( $instance, $new_instance, $old_instance, $class ) {
+		return $this->handle_widget( $instance, $class );
+	}
 
-		$cache            = $this->get_option_cache();
-		$to_cache         = array();
-		$instance['text'] = $this->process_content( $instance['text'], $cache, $to_cache );
-
-		$this->maybe_update_option_cache( $to_cache );
-
-		return $instance;
+	/**
+	 * Should filter content.
+	 *
+	 * @return bool
+	 */
+	protected function should_filter_content() {
+		return true;
 	}
 
 	/**
@@ -53,7 +68,7 @@ class AS3CF_S3_To_Local extends AS3CF_Filter {
 	 */
 	protected function url_needs_replacing( $url ) {
 		$uploads  = wp_upload_dir();
-		$base_url = $this->as3cf->remove_scheme( $uploads['baseurl'] );
+		$base_url = AS3CF_Utils::remove_scheme( $uploads['baseurl'] );
 
 		if ( false !== strpos( $url, $base_url ) ) {
 			// Local URL, no replacement needed
@@ -97,14 +112,14 @@ class AS3CF_S3_To_Local extends AS3CF_Filter {
 	protected function get_attachment_id_from_url( $url ) {
 		global $wpdb;
 
-		$full_url = $this->as3cf->remove_size_from_filename( $url );
+		$full_url = AS3CF_Utils::remove_size_from_filename( $url );
 
 		if ( isset( $this->query_cache[ $full_url ] ) ) {
 			// ID already cached, return
 			return $this->query_cache[ $full_url ];
 		}
 
-		$parts = parse_url( $full_url );
+		$parts = AS3CF_Utils::parse_url( $full_url );
 		$path  = $this->as3cf->decode_filename_in_path( ltrim( $parts['path'], '/' ) );
 
 		if ( false !== strpos( $path, '/' ) ) {
