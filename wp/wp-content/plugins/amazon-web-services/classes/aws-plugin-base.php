@@ -2,6 +2,8 @@
 
 class AWS_Plugin_Base {
 
+	const DBRAINS_URL = 'https://deliciousbrains.com';
+
 	protected $plugin_file_path;
 	protected $plugin_dir_path;
 	protected $plugin_slug;
@@ -320,6 +322,36 @@ class AWS_Plugin_Base {
 	}
 
 	/**
+	 * Enqueue script.
+	 *
+	 * @param string $handle
+	 * @param string $path
+	 * @param array  $deps
+	 * @param bool   $footer
+	 */
+	public function enqueue_script( $handle, $path, $deps = array(), $footer = true ) {
+		$version = $this->get_asset_version();
+		$suffix  = $this->get_asset_suffix();
+
+		$src = plugins_url( $path . $suffix . '.js', $this->plugin_file_path );
+		wp_enqueue_script( $handle, $src, $deps, $version, $footer );
+	}
+
+	/**
+	 * Enqueue style.
+	 *
+	 * @param string $handle
+	 * @param string $path
+	 * @param array  $deps
+	 */
+	public function enqueue_style( $handle, $path, $deps = array() ) {
+		$version = $this->get_asset_version();
+
+		$src = plugins_url( $path . '.css', $this->plugin_file_path );
+		wp_enqueue_style( $handle, $src, $deps, $version );
+	}
+
+	/**
 	 * Get the version used for script enqueuing
 	 *
 	 * @return mixed
@@ -347,16 +379,52 @@ class AWS_Plugin_Base {
 			'us-east-1'      => 'US Standard',
 			'us-west-1'      => 'Northern California',
 			'us-west-2'      => 'Oregon',
+			'ca-central-1'   => 'Montreal',
 			'eu-west-1'      => 'Ireland',
+			'eu-west-2'      => 'London',
 			'eu-central-1'   => 'Frankfurt',
 			'ap-southeast-1' => 'Singapore',
 			'ap-southeast-2' => 'Sydney',
 			'ap-northeast-1' => 'Tokyo',
-			'ap-south-1'     => 'Mumbai',
 			'ap-northeast-2' => 'Seoul',
+			'ap-south-1'     => 'Mumbai',
 			'sa-east-1'      => 'Sao Paulo',
 		);
 
 		return apply_filters( 'aws_get_regions', $regions );
+	}
+
+	/**
+	 * Generate site URL with correct UTM tags.
+	 *
+	 * @param string $path
+	 * @param array  $args
+	 * @param string $hash
+	 *
+	 * @return string
+	 */
+	public function dbrains_url( $path, $args = array(), $hash = '' ) {
+		$args = wp_parse_args( $args, array(
+			'utm_medium' => 'insideplugin',
+			'utm_source' => $this->get_utm_source(),
+		) );
+		$args = array_map( 'urlencode', $args );
+		$url  = trailingslashit( self::DBRAINS_URL ) . ltrim( $path, '/' );
+		$url  = add_query_arg( $args, $url );
+
+		if ( $hash ) {
+			$url .= '#' . $hash;
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Get UTM source for plugin.
+	 *
+	 * @return string
+	 */
+	protected function get_utm_source() {
+		return 'AWS';
 	}
 }
