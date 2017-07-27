@@ -1,25 +1,31 @@
 <?php
+/**
+ * The file upload file which allows users to upload files via the default HTML <input type="file">.
+ *
+ * @package Meta Box
+ */
 
 /**
  * File field class which uses HTML <input type="file"> to upload file.
  */
 class RWMB_File_Field extends RWMB_Field {
-
 	/**
-	 * Enqueue scripts and styles
+	 * Enqueue scripts and styles.
 	 */
 	public static function admin_enqueue_scripts() {
 		wp_enqueue_style( 'rwmb-file', RWMB_CSS_URL . 'file.css', array(), RWMB_VER );
-		wp_enqueue_script( 'rwmb-file', RWMB_JS_URL . 'file.js', array( 'jquery' ), RWMB_VER, true );
+		wp_enqueue_script( 'rwmb-file', RWMB_JS_URL . 'file.js', array( 'jquery-ui-sortable' ), RWMB_VER, true );
 
 		self::localize_script( 'rwmb-file', 'rwmbFile', array(
+			// Translators: %d is the number of files in singular form.
 			'maxFileUploadsSingle' => __( 'You may only upload maximum %d file', 'meta-box' ),
+			// Translators: %d is the number of files in plural form.
 			'maxFileUploadsPlural' => __( 'You may only upload maximum %d files', 'meta-box' ),
 		) );
 	}
 
 	/**
-	 * Add custom actions
+	 * Add custom actions.
 	 */
 	public static function add_actions() {
 		add_action( 'post_edit_form_tag', array( __CLASS__, 'post_edit_form_tag' ) );
@@ -41,19 +47,21 @@ class RWMB_File_Field extends RWMB_Field {
 		$post_id  = (int) filter_input( INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT );
 		$field_id = (string) filter_input( INPUT_POST, 'field_id' );
 		$order    = (string) filter_input( INPUT_POST, 'order' );
+		$object_type = (string) filter_input( INPUT_POST, 'object_type' );
+		$storage = rwmb_get_storage( $object_type );
 
 		check_ajax_referer( "rwmb-reorder-files_{$field_id}" );
 		parse_str( $order, $items );
-		delete_post_meta( $post_id, $field_id );
+		$storage->delete( $post_id, $field_id );
 		foreach ( $items['item'] as $item ) {
-			add_post_meta( $post_id, $field_id, $item, false );
+			$storage->add( $post_id, $field_id, $item, false );
 		}
 		wp_send_json_success();
 	}
 
 	/**
 	 * Ajax callback for deleting files.
-	 * Modified from a function used by "Verve Meta Boxes" plugin
+	 * Modified from a function used by "Verve Meta Boxes" plugin.
 	 *
 	 * @link http://goo.gl/LzYSq
 	 */
@@ -62,9 +70,11 @@ class RWMB_File_Field extends RWMB_Field {
 		$field_id      = (string) filter_input( INPUT_POST, 'field_id' );
 		$attachment_id = (int) filter_input( INPUT_POST, 'attachment_id', FILTER_SANITIZE_NUMBER_INT );
 		$force_delete  = (int) filter_input( INPUT_POST, 'force_delete', FILTER_SANITIZE_NUMBER_INT );
+		$object_type = (string) filter_input( INPUT_POST, 'object_type' );
+		$storage = rwmb_get_storage( $object_type );
 
 		check_ajax_referer( "rwmb-delete-file_{$field_id}" );
-		delete_post_meta( $post_id, $field_id, $attachment_id );
+		$storage->delete( $post_id, $field_id, $attachment_id );
 		$success = $force_delete ? wp_delete_attachment( $attachment_id ) : true;
 
 		if ( $success ) {
@@ -74,33 +84,26 @@ class RWMB_File_Field extends RWMB_Field {
 	}
 
 	/**
-	 * Get field HTML
+	 * Get field HTML.
 	 *
-	 * @param mixed $meta
-	 * @param array $field
+	 * @param mixed $meta  Meta value.
+	 * @param array $field Field parameters.
 	 *
 	 * @return string
 	 */
 	public static function html( $meta, $field ) {
-		$i18n_title = apply_filters( 'rwmb_file_upload_string', _x( 'Upload Files', 'file upload', 'meta-box' ), $field );
+		$meta = (array) $meta;
+		$meta = array_filter( $meta );
 		$i18n_more  = apply_filters( 'rwmb_file_add_string', _x( '+ Add new file', 'file upload', 'meta-box' ), $field );
 
-		// Uploaded files
-		$html    = self::get_uploaded_files( $meta, $field );
-		$classes = 'new-files';
-		if ( ! empty( $field['max_file_uploads'] ) && count( $meta ) >= (int) $field['max_file_uploads'] ) {
-			$classes .= ' hidden';
-		}
+		$html = self::get_uploaded_files( $meta, $field );
 
-		// Show form upload
+		// Show form upload.
 		$html .= sprintf(
-			'<div class="%s">
-				<h4>%s</h4>
-				<div class="file-input"><input type="file" name="%s[]" /></div>
+			'<div class="rwmb-new-files">
+				<div class="rwmb-file-input"><input type="file" name="%s[]" /></div>
 				<a class="rwmb-add-file" href="#"><strong>%s</strong></a>
 			</div>',
-			$classes,
-			$i18n_title,
 			$field['id'],
 			$i18n_more
 		);
@@ -111,25 +114,19 @@ class RWMB_File_Field extends RWMB_Field {
 	/**
 	 * Get HTML for uploaded files.
 	 *
-	 * @param array $files List of uploaded files
-	 * @param array $field Field parameters
+	 * @param array $files List of uploaded files.
+	 * @param array $field Field parameters.
 	 * @return string
 	 */
 	protected static function get_uploaded_files( $files, $field ) {
 		$reorder_nonce = wp_create_nonce( "rwmb-reorder-files_{$field['id']}" );
 		$delete_nonce  = wp_create_nonce( "rwmb-delete-file_{$field['id']}" );
 
-		$classes = 'rwmb-uploaded';
-		if ( count( $files ) <= 0 ) {
-			$classes .= ' hidden';
-		}
-
 		foreach ( (array) $files as $k => $file ) {
 			$files[ $k ] = self::call( $field, 'file_html', $file );
 		}
 		return sprintf(
-			'<ul class="%s" data-field_id="%s" data-delete_nonce="%s" data-reorder_nonce="%s" data-force_delete="%s" data-max_file_uploads="%s" data-mime_type="%s">%s</ul>',
-			$classes,
+			'<ul class="rwmb-uploaded" data-field_id="%s" data-delete_nonce="%s" data-reorder_nonce="%s" data-force_delete="%s" data-max_file_uploads="%s" data-mime_type="%s">%s</ul>',
 			$field['id'],
 			$delete_nonce,
 			$reorder_nonce,
@@ -143,7 +140,7 @@ class RWMB_File_Field extends RWMB_Field {
 	/**
 	 * Get HTML for uploaded file.
 	 *
-	 * @param int $file Attachment (file) ID
+	 * @param int $file Attachment (file) ID.
 	 * @return string
 	 */
 	protected static function file_html( $file ) {
@@ -174,77 +171,60 @@ class RWMB_File_Field extends RWMB_Field {
 	}
 
 	/**
-	 * Get meta values to save
+	 * Get meta values to save.
 	 *
-	 * @param mixed $new
-	 * @param mixed $old
-	 * @param int   $post_id
-	 * @param array $field
+	 * @param mixed $new     The submitted meta value.
+	 * @param mixed $old     The existing meta value.
+	 * @param int   $post_id The post ID.
+	 * @param array $field   The field parameters.
 	 *
 	 * @return array|mixed
 	 */
 	public static function value( $new, $old, $post_id, $field ) {
+		// @codingStandardsIgnoreLine
 		if ( empty( $_FILES[ $field['id'] ] ) ) {
 			return $new;
 		}
 
 		$new   = array();
-		$files = self::transform( $_FILES[ $field['id'] ] );
-		foreach ( $files as $file ) {
-			$new[] = self::upload( $file, $post_id );
+		$count = self::transform( $field['id'] );
+		for ( $i = 0; $i <= $count; $i ++ ) {
+			$attachment = media_handle_upload( "{$field['id']}_{$i}", $post_id );
+			if ( ! is_wp_error( $attachment ) ) {
+				$new[] = $attachment;
+			}
 		}
 
 		return array_filter( array_unique( array_merge( (array) $old, $new ) ) );
 	}
 
 	/**
-	 * Handle upload file.
+	 * Transform $_FILES from $_FILES['field']['key']['index'] to $_FILES['field_index']['key'].
 	 *
-	 * @param array $file
-	 * @param int   $post Post parent ID
-	 * @return int Attachment ID on success, false on failure.
-	 */
-	protected static function upload( $file, $post ) {
-		$file = wp_handle_upload( $file, array( 'test_form' => false ) );
-		if ( ! isset( $file['file'] ) ) {
-			return false;
-		}
-
-		$attachment = wp_insert_attachment( array(
-			'post_mime_type' => $file['type'],
-			'guid'           => $file['url'],
-			'post_parent'    => $post,
-			'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $file['file'] ) ),
-			'post_content'   => '',
-		), $file['file'], $post );
-		if ( is_wp_error( $attachment ) || ! $attachment ) {
-			return false;
-		}
-		wp_update_attachment_metadata( $attachment, wp_generate_attachment_metadata( $attachment, $file['file'] ) );
-		return $attachment;
-	}
-
-	/**
-	 * Transform $_FILES from $_FILES['field']['key']['index'] to $_FILES['field']['index']['key']
+	 * @param string $field_id The field ID.
 	 *
-	 * @param array $files
-	 * @return array
+	 * @return int The number of uploaded files.
 	 */
-	protected static function transform( $files ) {
-		$output = array();
-		foreach ( $files as $key => $list ) {
+	protected static function transform( $field_id ) {
+		// @codingStandardsIgnoreLine
+		foreach ( $_FILES[ $field_id ] as $key => $list ) {
 			foreach ( $list as $index => $value ) {
-				$output[ $index ][ $key ] = $value;
+				// @codingStandardsIgnoreLine
+				if ( ! isset( $_FILES[ "{$field_id}_{$index}" ] ) ) {
+					$_FILES[ "{$field_id}_{$index}" ] = array();
+				}
+				$_FILES[ "{$field_id}_{$index}" ][ $key ] = $value;
 			}
 		}
 
-		return $output;
+		// @codingStandardsIgnoreLine
+		return count( $_FILES[ $field_id ]['name'] );
 	}
 
 	/**
-	 * Normalize parameters for field
+	 * Normalize parameters for field.
 	 *
-	 * @param array $field
+	 * @param array $field Field parameters.
 	 * @return array
 	 */
 	public static function normalize( $field ) {
@@ -263,8 +243,8 @@ class RWMB_File_Field extends RWMB_Field {
 	/**
 	 * Get the field value. Return meaningful info of the files.
 	 *
-	 * @param  array    $field   Field parameters
-	 * @param  array    $args    Not used for this field
+	 * @param  array    $field   Field parameters.
+	 * @param  array    $args    Not used for this field.
 	 * @param  int|null $post_id Post ID. null for current post. Optional.
 	 *
 	 * @return mixed Full info of uploaded files
@@ -287,17 +267,18 @@ class RWMB_File_Field extends RWMB_Field {
 	}
 
 	/**
-	 * Get uploaded files information
+	 * Get uploaded files information.
 	 *
-	 * @param array $field Field parameter
-	 * @param array $files Files IDs
-	 * @param array $args  Additional arguments (for image size)
+	 * @param array $field Field parameters.
+	 * @param array $files Files IDs.
+	 * @param array $args  Additional arguments (for image size).
 	 * @return array
 	 */
 	public static function files_info( $field, $files, $args ) {
 		$return = array();
 		foreach ( (array) $files as $file ) {
-			if ( $info = self::call( $field, 'file_info', $file, $args ) ) {
+			$info = self::call( $field, 'file_info', $file, $args );
+			if ( $info ) {
 				$return[ $file ] = $info;
 			}
 		}
@@ -305,15 +286,16 @@ class RWMB_File_Field extends RWMB_Field {
 	}
 
 	/**
-	 * Get uploaded file information
+	 * Get uploaded file information.
 	 *
 	 * @param int   $file Attachment file ID (post ID). Required.
 	 * @param array $args Array of arguments (for size).
 	 *
-	 * @return array|bool False if file not found. Array of (id, name, path, url) on success
+	 * @return array|bool False if file not found. Array of (id, name, path, url) on success.
 	 */
 	public static function file_info( $file, $args = array() ) {
-		if ( ! $path = get_attached_file( $file ) ) {
+		$path = get_attached_file( $file );
+		if ( ! $path ) {
 			return false;
 		}
 
@@ -329,8 +311,8 @@ class RWMB_File_Field extends RWMB_Field {
 	/**
 	 * Format value for the helper functions.
 	 *
-	 * @param array        $field Field parameter
-	 * @param string|array $value The field meta value
+	 * @param array        $field Field parameters.
+	 * @param string|array $value The field meta value.
 	 * @return string
 	 */
 	public static function format_value( $field, $value ) {
@@ -348,8 +330,8 @@ class RWMB_File_Field extends RWMB_Field {
 	/**
 	 * Format a single value for the helper functions.
 	 *
-	 * @param array $field Field parameter
-	 * @param array $value The value
+	 * @param array $field Field parameters.
+	 * @param array $value The value.
 	 * @return string
 	 */
 	public static function format_single_value( $field, $value ) {
