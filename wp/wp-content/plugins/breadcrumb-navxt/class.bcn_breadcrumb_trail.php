@@ -1,6 +1,6 @@
 <?php
 /*  
-	Copyright 2007-2016  John Havlik  (email : john.havlik@mtekk.us)
+	Copyright 2007-2017  John Havlik  (email : john.havlik@mtekk.us)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ require_once(dirname(__FILE__) . '/includes/block_direct_access.php');
 class bcn_breadcrumb_trail
 {
 	//Our member variables
-	const version = '5.5.2';
+	const version = '5.7.1';
 	//An array of breadcrumbs
 	public $breadcrumbs = array();
 	public $trail = array();
@@ -319,6 +319,7 @@ class bcn_breadcrumb_trail
 				{
 					//We have to grab the post to find its parent, can't use $post for this one
 					$parent = get_post($id);
+					//TODO should we check that we have a WP_Post object here?
 					$parent = $parent->post_parent;
 				}
 				//Grab the frontpage, we'll need it shortly
@@ -726,7 +727,7 @@ class bcn_breadcrumb_trail
 	 */
 	protected function treat_as_root_page($post_type)
 	{
-		return (is_home() || (is_post_type_archive() && is_numeric($this->opt['apost_' . $post_type . '_root']) && !$this->opt['bpost_' . $post_type . '_archive_display']));
+		return (is_home() || (is_post_type_archive() && !$this->opt['bpost_' . $post_type . '_archive_display']));
 	}
 	/**
 	 * Determines if a post type has archives enabled or not
@@ -736,7 +737,7 @@ class bcn_breadcrumb_trail
 	 */
 	protected function has_archive($post_type)
 	{
-		$type = get_post_type_object($post_type);
+		$type = get_post_type_object($post_type); //TODO need a check on this for WP_Error?
 		return $type->has_archive;
 	}
 	/**
@@ -751,7 +752,16 @@ class bcn_breadcrumb_trail
 		$type_str = get_query_var('post_type', $default);
 		if($type_str === '' || is_array($type_str))
 		{
-			$type_str = $default;
+			//If we didn't get a type, or it was an array, try the the first post
+			$post = get_post();
+			if($post instanceof WP_Post)
+			{
+				$type_str = $post->post_type;
+			}
+			else
+			{
+				$type_str = $default;
+			}
 		}
 		return esc_attr($type_str);
 	}
@@ -801,7 +811,7 @@ class bcn_breadcrumb_trail
 	{
 		global $wp_taxonomies;
 		$type_str = false;
-		if(!isset($type->taxonomy))
+		if(!isset($type->taxonomy)) //TODO could probably check the class type here
 		{
 			$type_str = $this->get_type_string_query_var();
 		}
@@ -864,7 +874,7 @@ class bcn_breadcrumb_trail
 			}
 		}
 		//We need to do special things for custom post type archives, but not author or date archives
-		else if(is_archive() && !is_author() && !is_date() && !$this->is_builtin($this->get_type_string_query_var($wp_taxonomies[$type->taxonomy]->object_type[0])))
+		else if(is_archive() && !is_author() && !is_date() && isset($type->taxonomy) && !$this->is_builtin($this->get_type_string_query_var($wp_taxonomies[$type->taxonomy]->object_type[0])))
 		{
 			//We need the type for later, so save it
 			$type_str = $this->get_type_string_query_var($wp_taxonomies[$type->taxonomy]->object_type[0]);
@@ -879,7 +889,7 @@ class bcn_breadcrumb_trail
 			$type_str = 'page';
 			$root_id = get_option('page_on_front');
 		}
-		else if($this->opt['bblog_display'] || is_home())
+		else if(($this->opt['bblog_display'] || is_home()) && !is_search())
 		{
 			$type_str = 'post';
 			$root_id = get_option('page_for_posts');
@@ -898,7 +908,7 @@ class bcn_breadcrumb_trail
 		{
 			//Could use the $post global, but we can't really trust it
 			$post = get_post();
-			$type = get_post($post->post_parent);
+			$type = get_post($post->post_parent); //TODO check for WP_Error?
 			//If the parent of the attachment is a page, exit early (works around bug where is_single() returns true for an attachment to a page)
 			if($type->post_type == 'page')
 			{
@@ -1144,7 +1154,7 @@ class bcn_breadcrumb_trail
 			else
 			{
 				//Only show the separator when necessary
-				if($key < count($this->breadcrumbs) - 1)
+				if($position > 1)
 				{
 					$trail_str .= $this->opt['hseparator'];
 				}
@@ -1210,7 +1220,7 @@ class bcn_breadcrumb_trail
 				$li_class .= ' class="current_item"';
 			}
 			//Filter li_attributes adding attributes to the li element
-			$li_attribs = apply_filters('bcn_li_attributes', $li_class, $breadcrumb->type, $breadcrumb->get_id());
+			$li_attribs = apply_filters('bcn_li_attributes', $li_class, $breadcrumb->get_types(), $breadcrumb->get_id());
 			//Trim titles, if requested
 			if($this->opt['blimit_title'] && $this->opt['amax_title_length'] > 0)
 			{
@@ -1232,5 +1242,52 @@ class bcn_breadcrumb_trail
 			$credits = "<!-- Breadcrumb NavXT " . $this::version . " -->\n";
 			echo $credits . $trail_str;
 		}
+	}
+	/**
+	 * This functions outputs or returns the breadcrumb trail in Schema.org BreadcrumbList compliant JSON-LD
+	 *
+	 * @return void Void if option to print out breadcrumb trail was chosen.
+	 * @return string String version of the breadcrumb trail.
+	 * @param bool $return Whether to return data or to echo it.
+	 * @param bool $reverse[optional] Whether to reverse the output or not. 
+	 * 
+	 */
+	public function display_json_ld($return = false, $reverse = false)
+	{
+		//Set trail order based on reverse flag
+		$this->order($reverse);
+		$trail_str =  json_encode(
+			(object)array(
+				'@context' => 'http://schema.org',
+				'@type' => 'BreadcrumbList',
+				'itemListElement' => $this->json_ld_loop())
+			, JSON_UNESCAPED_SLASHES
+		);
+		//Should we return or echo the assembled trail?
+		if($return)
+		{
+			return $trail_str;
+		}
+		else
+		{
+			echo $trail_str;
+		}
+	}
+	/**
+	 * This function assembles all of the breadcrumbs into an object ready for json_encode
+	 *
+	 * @return array The array of breadcrumbs prepared for JSON-LD
+	 */
+	protected function json_ld_loop()
+	{		
+		$postion = 1;
+		$breadcrumbs = array();
+		//Loop around our breadcrumbs, call the JSON-LD assembler
+		foreach($this->breadcrumbs as $breadcrumb)
+		{
+			$breadcrumbs[] = $breadcrumb->assemble_json_ld($postion);
+			$postion++;
+		}
+		return $breadcrumbs;
 	}
 }
